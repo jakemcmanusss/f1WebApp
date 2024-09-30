@@ -1,0 +1,101 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.header-bar {
+    background-color: #E03D2D;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column; /* Ensure vertical stacking */
+    align-items: center;
+    padding: 20px;
+}
+
+.upper-sections {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center Next Race */
+}
+
+.lower-sections {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Align Last Race on left, Driver Standings in the middle, Constructor Standings on right */
+    padding-top: 20px;
+}
+
+.next-race {
+    width: 50%; /* Make it centered */
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.last-race {
+    width: 30%; /* Place it on the left */
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.driver-standings {
+    width: 30%; /* Center the driver standings */
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.standings {
+    width: 30%; /* Place it on the right */
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+footer {
+    background-color: #E03D2D;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
