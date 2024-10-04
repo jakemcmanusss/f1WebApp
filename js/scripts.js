@@ -1,4 +1,5 @@
-const localProxy = 'http://localhost:3000/api/';
+const localProxy = 'https://ergast.com/api/f1/';
+
 
 // Function to handle errors
 function handleError(section, message) {
