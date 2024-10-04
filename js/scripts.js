@@ -1,6 +1,7 @@
 const localProxy = 'https://ergast.com/api/f1/';
 
 
+
 // Function to handle errors
 function handleError(section, message) {
     const sectionElement = document.querySelector(section + ' tbody');

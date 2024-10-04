@@ -122,35 +122,34 @@ async function simulateOverallScenario(selectedDriverId) {
         const selectedDriverPoints = parseFloat(selectedDriver.points);
         const leadingDriverPoints = parseFloat(leadingDriver.points);
 
-        // Calculate the maximum points remaining for the selected driver
-        const maxRacePointsRemaining = calculateMaxPoints(remainingRaces);
-        const selectedDriverPotentialPoints = selectedDriverPoints + maxRacePointsRemaining;
-
+        // Check if the selected driver is the leading driver
         let resultMessage;
-
-        if (selectedDriverPotentialPoints <= leadingDriverPoints) {
+        if (selectedDriverId === leadingDriver.Driver.driverId) {
             resultMessage = `${selectedDriver.Driver.givenName} ${selectedDriver.Driver.familyName} is favored to win the season!`;
         } else {
-            // Updated output format
-            const scenario = calculateScenario(selectedDriver, leadingDriver, remainingRaces);
-            resultMessage = `
-                In order for ${selectedDriver.Driver.givenName} ${selectedDriver.Driver.familyName} to win the Driver Championship:
-                <br><br>
-                - They must win at least ${scenario.requiredRaceWins} out of ${remainingRaces.length} remaining races.<br>
-                - They should secure at least ${scenario.requiredFastestLaps} fastest laps.<br>
-                - They must finish ahead of Max Verstappen in at least ${scenario.requiredPlacements} races (and sprints) combined.
-            `;
+            // Calculate the maximum points remaining for the selected driver
+            const maxRacePointsRemaining = calculateMaxPoints(remainingRaces);
+            const selectedDriverPotentialPoints = selectedDriverPoints + maxRacePointsRemaining;
+
+            if (selectedDriverPotentialPoints <= leadingDriverPoints) {
+                resultMessage = `${selectedDriver.Driver.givenName} ${selectedDriver.Driver.familyName} cannot mathematically win the championship.`;
+            } else {
+                // Updated output format
+                const scenario = calculateScenario(selectedDriver, leadingDriver, remainingRaces);
+                resultMessage = `In order for ${selectedDriver.Driver.givenName} ${selectedDriver.Driver.familyName} to win the Driver Championship:
+                - They must win at least ${scenario.requiredRaceWins} out of ${remainingRaces.length} remaining races.
+                - They should secure at least ${scenario.requiredFastestLaps} fastest laps.
+                - They must finish ahead of Max Verstappen in at least ${scenario.requiredPlacements} races and sprints combined.`;
+            }
         }
 
-        document.getElementById('simulation-results').innerHTML = `<div class="simulation-result">${resultMessage}</div>`;
+        document.getElementById('simulation-results').innerHTML = resultMessage;
 
     } catch (error) {
         console.error('Error simulating the overall scenario:', error);
         document.getElementById('simulation-results').innerHTML = 'Error simulating the overall scenario.';
     }
 }
-
-
 
 
 // Function to calculate maximum possible points remaining
