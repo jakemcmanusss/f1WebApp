@@ -31,9 +31,23 @@
                         </thead>
                     </div>
                 </table>
-                <button class="calendar-btn">View Calendar</button>
+                <button id="view-calendar-btn"  class="calendar-btn">View Calendar</button>
             </section>
         </div>
+
+        <!-- Simulation Section for Calculating Championship Scenarios -->
+        <div class="simulation-container">
+            <h2>Simulate Championship Scenario</h2>
+            <div class="driver-selection">
+                <label for="driver-select">Choose a Driver:</label>
+                <select id="driver-select">
+                    <!-- Dynamically populated -->
+                </select>
+            </div>
+            <button id="simulate-btn">Simulate</button>
+            <div id="simulation-results"></div>
+        </div>
+
 
         <!-- Lower Sections: Last Race on the left, Driver Standings in the middle, Constructor Standings on the right -->
         <div class="lower-sections">
@@ -55,7 +69,7 @@
                         <tr><td colspan="6">Loading...</td></tr>
                     </tbody>
                 </table>
-                <button>Full Race Results</button>
+                <button id="full-race-results-btn">Full Race Results</button>
             </section>
 
             <!-- Driver Standings (Middle) -->
@@ -74,7 +88,7 @@
                         <tr><td colspan="4">Loading...</td></tr>
                     </tbody>
                 </table>
-                <button>Full Driver Standings</button>
+                <button id="full-driver-standings-btn">Full Driver Standings</button>
             </section>
 
             <!-- Constructor Standings (Right) -->
@@ -93,15 +107,26 @@
                         <tr><td colspan="4">Loading...</td></tr>
                     </tbody>
                 </table>
-                <button>Full Constructor Standings</button>
             </section>
         </div>
     </div>
+
+    <!-- Modal for Full Results -->
+    <div id="full-results-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <button id="close-modal" class="close-button">Close</button> <!-- Close button -->
+            <div id="modal-body">
+                <!-- Content will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
 
     <footer>
         <p>&copy; 2024 F1 Latest</p>
     </footer>
 
     <script src="js/scripts.js"></script>
+    <script src="js/simulation.js"></script>
 </body>
 </html>

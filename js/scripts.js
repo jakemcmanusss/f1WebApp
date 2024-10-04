@@ -1,5 +1,6 @@
 const localProxy = 'http://localhost:3000/api/';
 
+// Function to handle errors
 function handleError(section, message) {
     const sectionElement = document.querySelector(section + ' tbody');
     if (sectionElement) {
@@ -7,16 +8,16 @@ function handleError(section, message) {
     }
 }
 
-// Fetch Driver Standings
+// Function to fetch driver standings (top 10)
 async function fetchDriverStandings() {
     try {
         const response = await fetch(`${localProxy}current/driverStandings.json`);
         if (!response.ok) throw new Error('Failed to fetch driver standings');
         const data = await response.json();
         const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-        
+
         let driverTable = '';
-        standings.forEach((driver, index) => {
+        standings.slice(0, 10).forEach((driver, index) => {
             driverTable += `
                 <tr>
                     <td>${index + 1}</td>
@@ -26,11 +27,32 @@ async function fetchDriverStandings() {
                 </tr>`;
         });
         document.querySelector('.driver-standings tbody').innerHTML = driverTable;
+
     } catch (error) {
         console.error('Error fetching driver standings:', error);
         handleError('.driver-standings', 'Error loading driver standings.');
     }
 }
+
+// Function to display full driver standings
+function showFullDriverStandings() {
+    fetch(`${localProxy}current/driverStandings.json`)
+        .then(response => response.json())
+        .then(data => {
+            const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+            let fullStandings = '<h2>Full Driver Standings</h2><table><thead><tr><th>Pos.</th><th>Driver</th><th>Constructor</th><th>Pts.</th></tr></thead><tbody>';
+            standings.forEach((driver, index) => {
+                fullStandings += `<tr><td>${index + 1}</td><td>${driver.Driver.givenName} ${driver.Driver.familyName}</td><td>${driver.Constructors[0].name}</td><td>${driver.points}</td></tr>`;
+            });
+            fullStandings += '</tbody></table>';
+            document.getElementById('modal-body').innerHTML = fullStandings;
+            document.getElementById('full-results-modal').style.display = 'block'; // Show modal
+        })
+        .catch(error => console.error('Error fetching full driver standings:', error));
+}
+
+// Event listener for full driver standings button
+document.getElementById('full-driver-standings-btn').addEventListener('click', showFullDriverStandings);
 
 // Fetch Constructor Standings
 async function fetchConstructorStandings() {
@@ -39,7 +61,7 @@ async function fetchConstructorStandings() {
         if (!response.ok) throw new Error('Failed to fetch constructor standings');
         const data = await response.json();
         const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
-        
+
         let constructorTable = '';
         standings.forEach((constructor, index) => {
             constructorTable += `
@@ -57,22 +79,22 @@ async function fetchConstructorStandings() {
     }
 }
 
-// Fetch Last Race Results
+// Function to fetch last race results (top 10)
 async function fetchLastRaceResults() {
     try {
         const response = await fetch(`${localProxy}current/last/results.json`);
         if (!response.ok) throw new Error('Failed to fetch last race results');
-        
+
         const data = await response.json();
         const lastRace = data.MRData.RaceTable.Races[0];
         const results = lastRace.Results;
-        
-        // Update the last race section title
+
         document.querySelector('.last-race h2').textContent = `Last Race: ${lastRace.raceName}`;
         document.querySelector('.last-race p').textContent = `${lastRace.Circuit.circuitName} | ${lastRace.date}`;
 
+        // Show only the top 10 drivers
         let raceResultsTable = '';
-        results.forEach((result, index) => {
+        results.slice(0, 10).forEach((result, index) => {
             raceResultsTable += `
                 <tr>
                     <td>${index + 1}</td>
@@ -84,38 +106,57 @@ async function fetchLastRaceResults() {
                 </tr>`;
         });
         document.querySelector('.last-race tbody').innerHTML = raceResultsTable;
+
     } catch (error) {
         console.error('Error fetching last race results:', error);
         handleError('.last-race', 'Error loading last race results.');
     }
 }
 
+// Function to display full race results
+function showFullRaceResults() {
+    fetch(`${localProxy}current/last/results.json`)
+        .then(response => response.json())
+        .then(data => {
+            const results = data.MRData.RaceTable.Races[0].Results;
+            let fullResults = '<h2>Full Race Results</h2><table><thead><tr><th>Pos.</th><th>Driver</th><th>Constructor</th><th>Laps</th><th>Time</th><th>Pts.</th></tr></thead><tbody>';
+            results.forEach((result, index) => {
+                fullResults += `<tr><td>${index + 1}</td><td>${result.Driver.givenName} ${result.Driver.familyName}</td><td>${result.Constructor.name}</td><td>${result.laps}</td><td>${result.Time ? result.Time.time : 'N/A'}</td><td>${result.points}</td></tr>`;
+            });
+            fullResults += '</tbody></table>';
+            document.getElementById('modal-body').innerHTML = fullResults;
+            document.getElementById('full-results-modal').style.display = 'block'; // Show modal
+        })
+        .catch(error => console.error('Error fetching full race results:', error));
+}
+
+// Event listener for full race results button
+document.getElementById('full-race-results-btn').addEventListener('click', showFullRaceResults);
+
 // Fetch Next Race Information
 async function fetchNextRace() {
     try {
         const response = await fetch(`${localProxy}current.json`);
         if (!response.ok) throw new Error('Failed to fetch next race information');
-        
+
         const data = await response.json();
         const races = data.MRData.RaceTable.Races;
         const nextRace = races.find(race => new Date(race.date) > new Date());
 
-        // Update the next race section
         document.querySelector('.next-race h2').textContent = `Next Race: ${nextRace.raceName}`;
         document.querySelector('.next-race p').textContent = `${nextRace.Circuit.circuitName} | ${nextRace.date}`;
 
-        // Start the countdown for the next race
-        startCountdown(nextRace.date, nextRace.time);
+        // Start the countdown
+        if (nextRace) startCountdown(nextRace.date, nextRace.time);
     } catch (error) {
         console.error('Error fetching next race information:', error);
         document.querySelector('.next-race h2').textContent = 'Error loading next race.';
     }
 }
 
-// Countdown Timer for Next Race
+// Countdown Timer
 function startCountdown(raceDate, raceTime) {
     const raceDateTime = new Date(`${raceDate}T${raceTime}`);
-
     const countdownInterval = setInterval(() => {
         const now = new Date().getTime();
         const distance = raceDateTime - now;
@@ -138,13 +179,46 @@ function startCountdown(raceDate, raceTime) {
     }, 1000);
 }
 
+// Fetch Drivers for Simulation
+async function fetchDriversForSimulation() {
+    try {
+        const response = await fetch(`${localProxy}current/driverStandings.json`);
+        const data = await response.json();
+        const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+
+        const selectElement = document.getElementById('driver-select');
+        selectElement.innerHTML = ""; // Clear existing options
+        standings.forEach(driver => {
+            const option = document.createElement('option');
+            option.value = driver.Driver.driverId;
+            option.text = `${driver.Driver.givenName} ${driver.Driver.familyName}`;
+            selectElement.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching drivers:', error);
+    }
+}
+
+// Attach event listener for the View Calendar button
+document.getElementById('view-calendar-btn').addEventListener('click', () => {
+    // Open the schedules in a new window
+    window.open('https://www.formula1.com/en/racing/2024.html', '_blank');
+    window.open('https://www.formula1.com/en/racing/2025.html', '_blank');
+});
+
+// Close modal functionality
+document.getElementById('close-modal').addEventListener('click', function() {
+    document.getElementById('full-results-modal').style.display = 'none'; // Hide modal
+});
+
 // Initialize the app by fetching data
 async function init() {
     await fetchNextRace();
     await fetchLastRaceResults();
     await fetchDriverStandings();
     await fetchConstructorStandings();
+    await fetchDriversForSimulation();
 }
 
-// Call the init function when the page loads
+// Call init when the page loads
 window.onload = init;
